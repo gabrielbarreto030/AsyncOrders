@@ -8,30 +8,7 @@ A production-ready reference implementation of asynchronous order processing usi
 
 AsyncOrders demonstrates how to decouple a write API from its processing logic using a message queue. The API accepts orders and immediately returns to the caller; a separate Worker Service consumes those events and updates the database asynchronously.
 
-```
-┌─────────────┐     POST /orders     ┌───────────────────┐
-│   Client    │ ──────────────────►  │    Order.Api      │
-└─────────────┘                      └────────┬──────────┘
-                                              │ saves Order (Pending)
-                                              │ publishes OrderCreatedMessage
-                                              ▼
-                                      ┌──────────────┐
-                                      │   RabbitMQ   │  queue: order-created
-                                      └──────┬───────┘
-                                             │ consumes
-                                             ▼
-                                     ┌───────────────────┐
-                                     │   Order.Worker    │
-                                     └────────┬──────────┘
-                                              │ order.MarkAsProcessed()
-                                              │ updates Order (Processed)
-                                              ▼
-                                       ┌────────────┐
-                                       │ PostgreSQL │
-                                       └────────────┘
-```
-
----
+![Flow do processamento assíncrono](./flow.png)
 
 ## Architecture
 
